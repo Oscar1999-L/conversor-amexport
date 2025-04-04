@@ -220,6 +220,11 @@ def optimize_pdf_size(input_pdf, output_dir=None, target_dpi=150, grayscale=Fals
                             print(f"Advertencia: Imagen en xref {xref} es nula o no extraíble, saltando...")
                             continue
 
+                        # Añade esta validación adicional:
+                        if not base_image.get("width", 0) or not base_image.get("height", 0):
+                            print(f"Imagen en xref {xref} tiene dimensiones inválidas, saltando...")
+                            continue
+
                         # Validar tamaño y formato de la imagen extraída
                         img_bytes = base_image["image"]
                         if len(img_bytes) < 100:  # Tamaño mínimo de imagen razonable
@@ -284,8 +289,3 @@ def optimize_pdf_size(input_pdf, output_dir=None, target_dpi=150, grayscale=Fals
             dst_doc.close()
     
     return None
-
-
-if __name__ == '__main__':
-   port = int(os.environ.get('PORT', 5000))
-   app.run(host='0.0.0.0', port=port)
