@@ -57,23 +57,25 @@ class PDFProcessor:
                     grupos = {}
                     for archivo in archivos:
                         base = os.path.splitext(os.path.basename(archivo))[0]
+                        if archivo.lower().endswith('.xml'):
+                            base = base[:-4]  # Quitar .xml para agrupar bien
                         grupos.setdefault(base, []).append(archivo)
 
                     for grupo in grupos.values():
-                        grupo.sort(key=lambda x: x.lower().endswith('.xml'))
+                        pdfs = sorted([f for f in grupo if f.lower().endswith('.pdf')])
+                        xmls = sorted([f for f in grupo if f.lower().endswith('.xml')])
 
-                    for grupo in grupos.values():
-                        for archivo in grupo:
-                            if archivo.lower().endswith('.xml'):
-                                temp_pdf = os.path.join(self.temp_dir, f"temp_{os.path.basename(archivo)}.pdf")
-                                if self._convert_xml_to_pdf(archivo, temp_pdf):
-                                    temp_files.append(temp_pdf)
-                                    merger.append(temp_pdf)
-                            else:
-                                optimized = self._optimize_pdf(archivo)
-                                if optimized:
-                                    temp_files.append(optimized)
-                                    merger.append(optimized)
+                        for archivo in pdfs:
+                            optimized = self._optimize_pdf(archivo)
+                            if optimized:
+                                temp_files.append(optimized)
+                                merger.append(optimized)
+
+                        for archivo in xmls:
+                            temp_pdf = os.path.join(self.temp_dir, f"temp_{os.path.basename(archivo)}.pdf")
+                            if self._convert_xml_to_pdf(archivo, temp_pdf):
+                                temp_files.append(temp_pdf)
+                                merger.append(temp_pdf)
                 else:
                     for archivo in archivos:
                         if archivo.lower().endswith('.xml'):
@@ -106,5 +108,3 @@ class PDFProcessor:
                     os.remove(f)
             except Exception as e:
                 print(f"No se pudo eliminar {f}: {str(e)}")
-
-    
