@@ -26,19 +26,21 @@ class XMLtoPDFConverter:
     def convertir_xml_a_txt(self, ruta_xml, ruta_txt):
         """Convierte XML a TXT con formato legible"""
         try:
-            # Abrir en modo binario para copia exacta byte por byte
-            with open(ruta_xml, 'rb') as archivo_xml:
-                contenido = archivo_xml.read()
+            # Leer el contenido del XML
+            with open(ruta_xml, 'r', encoding='utf-8') as archivo_xml:
+                xml_content = archivo_xml.read()
             
-            # Escribir el contenido exactamente igual en el TXT
-            with open(ruta_txt, 'wb') as archivo_txt:
-                archivo_txt.write(contenido)
+            # Formatear el XML para que sea legible
+            formatted_lines = self.format_xml_text(xml_content)
             
-            print(f"Copia exacta realizada: {ruta_txt}")
+            # Escribir las líneas formateadas en el TXT
+            with open(ruta_txt, 'w', encoding='utf-8') as archivo_txt:
+                archivo_txt.write("\n".join(formatted_lines))
+            
+            print(f"XML convertido a TXT legible: {ruta_txt}")
             return True
-        
         except Exception as e:
-            print(f"Error al copiar: {str(e)}")
+            print(f"Error al convertir XML a TXT: {str(e)}")
             return False
 
     def convertir_txt_a_pdf(self, ruta_txt, ruta_pdf, nombre_xml=None):
